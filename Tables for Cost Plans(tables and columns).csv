@@ -1,0 +1,261 @@
+table_name,column_name,datatype,constraint,details
+projects,project_id,BIGINT,"PK, AUTO_INCREMENT",Internal surrogate key
+projects,wbse_code,VARCHAR(50),"UNIQUE, NOT NULL",Business identifier (WBSE)
+projects,project_name,VARCHAR(255),NOT NULL,Project name
+projects,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft delete flag
+projects,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Record creation time
+projects,updated_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,Last update
+planning_years,planning_year_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+planning_years,year_label,INT,"UNIQUE, NOT NULL","2025, 2026, etc."
+planning_years,status,"ENUM(‘DRAFT’,‘ACTIVE’,‘CLOSED’)",NOT NULL,Planning lifecycle
+planning_years,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation timestamp
+project_metadata,project_metadata_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+project_metadata,project_id,BIGINT,"FK ? projects(project_id), NOT NULL; UNIQUE (project_id, planning_year_id)",Parent project
+project_metadata,planning_year_id,BIGINT,"FK ? planning_years(planning_year_id), NOT NULL",Planning year
+project_metadata,division,VARCHAR(100),NOT NULL,Organizational division
+project_metadata,branch,VARCHAR(100),NOT NULL,Organizational branch
+project_metadata,section_country,VARCHAR(100),NOT NULL,Section or country
+project_metadata,implementing_grant,VARCHAR(100),NULL,Umoja implementing grant
+project_metadata,trust_fund,VARCHAR(100),NULL,Trust fund
+project_metadata,earmarking,VARCHAR(100),NULL,Earmarking info
+project_metadata,project_end_date,DATE,NULL,End date
+project_metadata,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation timestamp
+project_metadata,updated_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,Last update
+users,user_id,BIGINT,"PK, AUTO_INCREMENT",Internal user ID
+users,email,VARCHAR(255),"UNIQUE, NOT NULL",Login email
+users,full_name,VARCHAR(255),NOT NULL,Display name
+users,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft disable
+users,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation timestamp
+users,updated_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,Last update
+roles,role_id,BIGINT,"PK, AUTO_INCREMENT",Role identifier
+roles,role_name,VARCHAR(50),"UNIQUE, NOT NULL","FINANCE_EDITOR, REVIEWER"
+roles,description,VARCHAR(255),NULL,Role description
+roles,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+user_project_access,user_project_access_id,BIGINT,"PK, AUTO_INCREMENT",Internal ID
+user_project_access,user_id,BIGINT,"FK ? users(user_id), NOT NULL; UNIQUE (user_id, project_id, planning_year_id)",User
+user_project_access,project_id,BIGINT,"FK ? projects(project_id), NOT NULL",Project
+user_project_access,planning_year_id,BIGINT,"FK ? planning_years(planning_year_id), NULL",Optional year scope
+user_project_access,role_id,BIGINT,"FK ? roles(role_id), NOT NULL",Permission level
+user_project_access,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Assignment timestamp
+countries,country_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+countries,country_code,VARCHAR(10),"UNIQUE, NOT NULL",ISO or internal country code
+countries,country_name,VARCHAR(100),NOT NULL,Country name
+countries,region,VARCHAR(100),NULL,Optional region grouping
+countries,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft deactivate
+countries,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+duty_stations,duty_station_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+duty_stations,duty_station_code,VARCHAR(20),"UNIQUE, NOT NULL",Duty station code
+duty_stations,duty_station_name,VARCHAR(100),NOT NULL,"Geneva, Nairobi, etc."
+duty_stations,country_id,BIGINT,"FK ? countries(country_id), NOT NULL",Parent country
+duty_stations,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft deactivate
+duty_stations,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+staff_categories,staff_category_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+staff_categories,category_code,VARCHAR(20),"UNIQUE, NOT NULL","P, GS, NO, UNV"
+staff_categories,category_name,VARCHAR(100),NOT NULL,Category label
+staff_categories,description,VARCHAR(255),NULL,Optional description
+staff_categories,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+grades,grade_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+grades,grade_code,VARCHAR(20),"UNIQUE, NOT NULL","P-2, G-7, NO-A"
+grades,staff_category_id,BIGINT,"FK ? staff_categories(staff_category_id), NOT NULL",Category mapping
+grades,grade_rank,INT,NOT NULL,Ordering within category
+grades,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+umoja_classes,umoja_class_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+umoja_classes,umoja_code,VARCHAR(10),"UNIQUE, NOT NULL","010, 155, etc."
+umoja_classes,description,VARCHAR(255),NOT NULL,Umoja class description
+umoja_classes,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+cost_categories,cost_category_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+cost_categories,category_code,VARCHAR(20),"UNIQUE, NOT NULL","STAFF, AOC, GRANTS"
+cost_categories,category_name,VARCHAR(100),NOT NULL,Display name
+cost_categories,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+cost_subcategories,cost_subcategory_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+cost_subcategories,cost_category_id,BIGINT,"FK ? cost_categories(cost_category_id), NOT NULL; UNIQUE (cost_category_id, subcategory_code)",Parent category
+cost_subcategories,subcategory_code,VARCHAR(50),NOT NULL,Internal code
+cost_subcategories,subcategory_name,VARCHAR(150),NOT NULL,Reporting label
+cost_subcategories,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+commitment_items,commitment_item_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+commitment_items,commitment_item_code,VARCHAR(20),"UNIQUE, NOT NULL",Commitment item code
+commitment_items,description,VARCHAR(255),NOT NULL,Description
+commitment_items,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+imis_object_codes,imis_object_code_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+imis_object_codes,imis_code,VARCHAR(20),"UNIQUE, NOT NULL",IMIS object code
+imis_object_codes,description,VARCHAR(255),NOT NULL,Description
+imis_object_codes,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+salary_parameter_sets,salary_parameter_set_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+salary_parameter_sets,planning_year_id,BIGINT,"FK ? planning_years(planning_year_id), NOT NULL",Year scoping
+salary_parameter_sets,country_id,BIGINT,"FK ? countries(country_id), NULL",If set applies at country level
+salary_parameter_sets,duty_station_id,BIGINT,"FK ? duty_stations(duty_station_id), NULL",If set applies at duty station level
+salary_parameter_sets,set_name,VARCHAR(150),NOT NULL,"Human label (e.g., “2026 Geneva baseline”)"
+salary_parameter_sets,version_label,VARCHAR(50),NULL,"Optional: “v1”, “midyear-update”"
+salary_parameter_sets,is_baseline,BOOLEAN,NOT NULL DEFAULT TRUE,Marks default set for that year+location
+salary_parameter_sets,effective_from,DATE,NULL,Optional effective start date
+salary_parameter_sets,effective_to,DATE,NULL,Optional effective end date
+salary_parameter_sets,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft deactivate
+salary_parameters,salary_parameter_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+salary_parameters,salary_parameter_set_id,BIGINT,"FK ? salary_parameter_sets(salary_parameter_set_id), NOT NULL",Parent set
+salary_parameters,staff_category_id,BIGINT,"FK ? staff_categories(staff_category_id), NOT NULL",P/GS/NO/UNV
+salary_parameters,grade_id,BIGINT,"FK ? grades(grade_id), NOT NULL",Grade
+salary_parameters,base_salary_amount,"DECIMAL(15,2)",NULL,Grade baseline amount
+salary_parameters,currency_code,VARCHAR(10),NULL,If stored (USD/CHF/local)
+salary_parameters,exchange_rate_to_usd,"DECIMAL(15,6)",NULL,Optional if conversions needed
+salary_parameters,post_adjustment_pct,"DECIMAL(7,4)",NULL,"E.g., 0.1234 = 12.34%"
+salary_parameters,common_staff_cost_multiplier,"DECIMAL(10,6)",NULL,Category-level multiplier
+salary_parameters,additional_multiplier,"DECIMAL(10,6)",NULL,Optional extra factor
+salary_parameters,notes,VARCHAR(255),NULL,Human explanation
+salary_parameters,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+project_parameters,project_parameter_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+project_parameters,project_metadata_id,BIGINT,"FK ? project_metadata(project_metadata_id), NOT NULL",Project-year context
+project_parameters,inflation_rate_pct,"DECIMAL(7,4)",NOT NULL DEFAULT 0.0000,Inflation as decimal percent
+project_parameters,psc_rate_pct,"DECIMAL(7,4)",NOT NULL DEFAULT 0.0000,Programme support cost rate
+project_parameters,default_salary_parameter_set_id,BIGINT,"FK ? salary_parameter_sets(salary_parameter_set_id), NULL",Default salary set for this project-year
+project_parameters,notes,VARCHAR(255),NULL,Assumption notes
+project_parameters,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+positions,position_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+positions,position_code,VARCHAR(50),"UNIQUE, NOT NULL",Business Position ID (Umoja Position ID)
+positions,title,VARCHAR(200),NULL,Optional position title
+positions,staff_category_id,BIGINT,"FK ? staff_categories(staff_category_id), NULL",Baseline category
+positions,grade_id,BIGINT,"FK ? grades(grade_id), NULL",Baseline grade
+positions,duty_station_id,BIGINT,"FK ? duty_stations(duty_station_id), NULL",Baseline duty station (optional)
+positions,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft deactivate
+positions,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+project_positions,project_position_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+project_positions,project_metadata_id,BIGINT,"FK ? project_metadata(project_metadata_id), NOT NULL",Project-year
+project_positions,position_id,BIGINT,"FK ? positions(position_id), NOT NULL",Allowed position
+project_positions,source_system,VARCHAR(50),NULL,"“Umoja”, “manual”, “import”"
+project_positions,is_active,BOOLEAN,NOT NULL DEFAULT TRUE,Soft deactivate
+project_positions,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+staffing_plan,staffing_plan_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+staffing_plan,project_metadata_id,BIGINT,"FK ? project_metadata(project_metadata_id), NOT NULL",Project-year
+staffing_plan,project_position_id,BIGINT,"FK ? project_positions(project_position_id), NOT NULL; UNIQUE (project_metadata_id, project_position_id)",Enforces allowed position set
+staffing_plan,staff_category_id,BIGINT,"FK ? staff_categories(staff_category_id), NULL",Override if planning differs
+staffing_plan,grade_id,BIGINT,"FK ? grades(grade_id), NULL",Override grade
+staffing_plan,duty_station_id,BIGINT,"FK ? duty_stations(duty_station_id), NULL",Override duty station
+staffing_plan,funding_start_date,DATE,NULL,Planning dates
+staffing_plan,funding_end_date,DATE,NULL,Planning dates
+staffing_plan,fte_pct,"DECIMAL(7,4)",NOT NULL DEFAULT 1.0000,1.0 = 100%
+staffing_plan,notes,VARCHAR(255),NULL,Justification
+staffing_plan,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+deployment_lines,deployment_line_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+deployment_lines,project_metadata_id,BIGINT,"FK ? project_metadata(project_metadata_id), NOT NULL",Project-year
+deployment_lines,staffing_plan_id,BIGINT,"FK ? staffing_plan(staffing_plan_id), NULL",If allocation is position-based
+deployment_lines,staff_category_id,BIGINT,"FK ? staff_categories(staff_category_id), NULL",If allocation is bucket-based
+deployment_lines,grade_id,BIGINT,"FK ? grades(grade_id), NULL",If allocation is bucket-based
+deployment_lines,allocation_method,VARCHAR(20),NOT NULL,"“MONTHLY”, “RULE”, “DATE_RANGE”"
+deployment_lines,notes,VARCHAR(255),NULL,Explanation
+deployment_lines,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+deployment_monthly_allocations,deployment_monthly_allocation_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+deployment_monthly_allocations,deployment_line_id,BIGINT,"FK ? deployment_lines(deployment_line_id), NOT NULL; UNIQUE (deployment_line_id, month_date)",Parent line
+deployment_monthly_allocations,month_date,DATE,NOT NULL,"Use first day of month (e.g., 2026-01-01)"
+deployment_monthly_allocations,allocation_value,"DECIMAL(10,4)",NOT NULL DEFAULT 0.0000,Post-month value or FTE unit
+deployment_monthly_allocations,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+allocation_rules,allocation_rule_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+allocation_rules,deployment_line_id,BIGINT,"FK ? deployment_lines(deployment_line_id), NOT NULL",Rule belongs to a line
+allocation_rules,start_date,DATE,NOT NULL,Effective start
+allocation_rules,end_date,DATE,NOT NULL,Effective end
+allocation_rules,allocation_pct,"DECIMAL(7,4)",NOT NULL DEFAULT 1.0000,% allocation during range
+allocation_rules,rule_type,VARCHAR(30),NOT NULL,"“DATE_RANGE_PERCENT”, etc."
+allocation_rules,created_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,Creation time
+opc_items,opc_item_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+opc_items,project_metadata_id,BIGINT,FK ? project_metadata,Project-year context
+opc_items,scenario_id,BIGINT,"FK ? scenarios, NOT NULL",Scenario scope
+opc_items,cost_category_id,BIGINT,FK ? cost_categories,High-level category
+opc_items,cost_subcategory_id,BIGINT,FK ? cost_subcategories,Subcategory
+opc_items,umoja_class_id,BIGINT,FK ? umoja_classes,Umoja classification
+opc_items,commitment_item_id,BIGINT,FK ? commitment_items,Commitment item
+opc_items,imis_object_code_id,BIGINT,FK ? imis_object_codes,IMIS code
+opc_items,description,VARCHAR(255),NOT NULL,Cost item description
+opc_items,unit,VARCHAR(50),NULL,Unit of measure
+opc_items,quantity,"DECIMAL(12,4)",NOT NULL DEFAULT 0,Planned quantity
+opc_items,unit_rate,"DECIMAL(15,2)",NOT NULL DEFAULT 0,Cost per unit
+opc_items,annual_amount,"DECIMAL(18,2)",GENERATED / STORED,quantity × unit_rate
+opc_items,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Creation time
+opc_quarter_allocations,opc_quarter_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+opc_quarter_allocations,opc_item_id,BIGINT,FK ? opc_items,Parent OPC item
+opc_quarter_allocations,quarter,"ENUM(‘Q1’,‘Q2’,‘Q3’,‘Q4’)",NOT NULL,Quarter
+opc_quarter_allocations,amount,"DECIMAL(18,2)",NOT NULL DEFAULT 0,Allocated amount
+opc_quarter_allocations,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Creation time
+opc_templates,opc_template_id,BIGINT,"PK, AUTO_INCREMENT",Template identifier
+opc_templates,template_name,VARCHAR(150),NOT NULL,Template label
+opc_templates,cost_category_id,BIGINT,FK ? cost_categories,Category
+opc_templates,cost_subcategory_id,BIGINT,FK ? cost_subcategories,Subcategory
+opc_templates,umoja_class_id,BIGINT,FK ? umoja_classes,Umoja class
+opc_templates,commitment_item_id,BIGINT,FK ? commitment_items,Commitment item
+opc_templates,imis_object_code_id,BIGINT,FK ? imis_object_codes,IMIS code
+opc_templates,default_unit,VARCHAR(50),NULL,Default unit
+opc_templates,default_rate,"DECIMAL(15,2)",NULL,Default rate
+opc_templates,is_active,BOOLEAN,DEFAULT TRUE,Template availability
+activities,activity_id,BIGINT,"PK, AUTO_INCREMENT",Activity identifier
+activities,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+activities,scenario_id,BIGINT,FK ? scenarios,Scenario scope
+activities,activity_code,VARCHAR(50),NULL,Optional business code
+activities,title,VARCHAR(255),NOT NULL,Activity name
+activities,owner,VARCHAR(150),NULL,Responsible unit/person
+activities,output_reference,VARCHAR(255),NULL,Output/result mapping
+activities,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Creation time
+activity_costs,activity_cost_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+activity_costs,activity_id,BIGINT,FK ? activities,Parent activity
+activity_costs,cost_category_id,BIGINT,FK ? cost_categories,Category
+activity_costs,cost_subcategory_id,BIGINT,FK ? cost_subcategories,Subcategory
+activity_costs,umoja_class_id,BIGINT,FK ? umoja_classes,Umoja class
+activity_costs,q1_amount,"DECIMAL(18,2)",DEFAULT 0,Q1
+activity_costs,q2_amount,"DECIMAL(18,2)",DEFAULT 0,Q2
+activity_costs,q3_amount,"DECIMAL(18,2)",DEFAULT 0,Q3
+activity_costs,q4_amount,"DECIMAL(18,2)",DEFAULT 0,Q4
+activity_costs,annual_amount,"DECIMAL(18,2)",GENERATED / STORED,Sum of quarters
+scenarios,scenario_id,BIGINT,"PK, AUTO_INCREMENT",Scenario identifier
+scenarios,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+scenarios,scenario_name,VARCHAR(150),NOT NULL,Scenario label
+scenarios,is_baseline,BOOLEAN,DEFAULT FALSE,Baseline flag
+scenarios,description,VARCHAR(255),NULL,Scenario purpose
+scenarios,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Creation time
+scenario_overrides,scenario_override_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+scenario_overrides,scenario_id,BIGINT,FK ? scenarios,Scenario
+scenario_overrides,target_table,VARCHAR(100),NOT NULL,Table overridden
+scenario_overrides,target_row_id,BIGINT,NOT NULL,Row affected
+scenario_overrides,field_name,VARCHAR(100),NOT NULL,Field overridden
+scenario_overrides,old_value,TEXT,NULL,Original value
+scenario_overrides,new_value,TEXT,NOT NULL,Scenario value
+scenario_overrides,reason,VARCHAR(255),NULL,Justification
+versions,version_id,BIGINT,"PK, AUTO_INCREMENT",Version identifier
+versions,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+versions,scenario_id,BIGINT,FK ? scenarios,Scenario snapshot
+versions,status,"ENUM(‘DRAFT’,‘SUBMITTED’,‘APPROVED’)",NOT NULL,Lifecycle status
+versions,frozen_at,TIMESTAMP,NULL,Freeze timestamp
+versions,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Creation time
+staff_costing,staff_costing_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+staff_costing,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+staff_costing,scenario_id,BIGINT,FK ? scenarios,Scenario
+staff_costing,staffing_plan_id,BIGINT,FK ? staffing_plan,Source input
+staff_costing,annual_cost,"DECIMAL(18,2)",NOT NULL,Computed annual staff cost
+staff_costing,created_at,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Calculation time
+psc_calculations,psc_calculation_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+psc_calculations,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+psc_calculations,scenario_id,BIGINT,FK ? scenarios,Scenario
+psc_calculations,base_amount,"DECIMAL(18,2)",NOT NULL,Amount PSC applied on
+psc_calculations,psc_rate,"DECIMAL(7,4)",NOT NULL,PSC rate
+psc_calculations,psc_amount,"DECIMAL(18,2)",GENERATED / STORED,base × rate
+summary_lines,summary_line_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+summary_lines,project_metadata_id,BIGINT,FK ? project_metadata,Project-year
+summary_lines,scenario_id,BIGINT,FK ? scenarios,Scenario
+summary_lines,cost_category_id,BIGINT,FK ? cost_categories,Category
+summary_lines,cost_subcategory_id,BIGINT,FK ? cost_subcategories,Subcategory
+summary_lines,umoja_class_id,BIGINT,FK ? umoja_classes,Umoja
+summary_lines,annual_total,"DECIMAL(18,2)",NOT NULL,Final amount
+rollup_totals,rollup_total_id,BIGINT,"PK, AUTO_INCREMENT",Identifier
+rollup_totals,planning_year_id,BIGINT,FK ? planning_years,Year
+rollup_totals,division,VARCHAR(100),NULL,Division
+rollup_totals,branch,VARCHAR(100),NULL,Branch
+rollup_totals,country_id,BIGINT,FK ? countries,Country
+rollup_totals,scenario_id,BIGINT,FK ? scenarios,Scenario
+rollup_totals,total_amount,"DECIMAL(18,2)",NOT NULL,Aggregated total
+audit_log,audit_log_id,BIGINT,"PK, AUTO_INCREMENT",Internal identifier
+audit_log,occurred_at,TIMESTAMP,NOT NULL DEFAULT CURRENT_TIMESTAMP,When the change happened
+audit_log,user_id,BIGINT,"FK ? users, NOT NULL",Who made the change
+audit_log,action,"ENUM(‘INSERT’,‘UPDATE’,‘DELETE’)",NOT NULL,Type of change
+audit_log,target_table,VARCHAR(100),NOT NULL,"Table affected (e.g., opc_items)"
+audit_log,target_row_id,BIGINT,NOT NULL,Primary key value of affected row
+audit_log,field_name,VARCHAR(100),NULL,Column changed (NULL for INSERT/DELETE summaries)
+audit_log,old_value,LONGTEXT,NULL,Previous value (JSON/string)
+audit_log,new_value,LONGTEXT,NULL,New value (JSON/string)
+audit_log,change_reason,VARCHAR(255),NULL,Optional justification (finance edits need this often)
+audit_log,request_id,VARCHAR(100),NULL,Correlates all changes from one request/session
+audit_log,source,"ENUM(‘UI’,‘API’,‘IMPORT’,‘SYSTEM’)",NOT NULL DEFAULT ‘UI’,Where the change came from
